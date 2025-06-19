@@ -9,7 +9,7 @@
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {}
+    "ghcr.io/devcontainers-extra/features/nestjs-cli:2": {}
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -22,7 +22,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "Postman.postman-for-vscode"
+        "Postman.postman-for-vscode",
+        "Supermaven.supermaven"
       ]
     }
   }
