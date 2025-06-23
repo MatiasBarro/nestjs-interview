@@ -8,16 +8,16 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { TodoListItemService } from './todo_list_item.service';
-import { TodoListsService } from './todo_lists.service';
-import { CreateTodoListItemDto } from './dtos/create-todo_list_item';
-import { TodoListItem } from 'src/interfaces/todo_list_item.interface';
-import { UpdateTodoListItemDto } from './dtos/update-todo_list_item';
+import { TodoListItemsService } from './todo_lists_items.service';
+import { TodoListsService } from '../todo_lists/todo_lists.service';
+import { CreateTodoListItemDto } from './dtos/create-todo_lists_item';
+import { TodoListItem } from 'src/todo_lists_items/interfaces/todo_lists_item.interface';
+import { UpdateTodoListItemDto } from './dtos/update-todo_lists_item';
 
 @Controller('api/todolists/:todoListId/items')
-export class TodoListItemController {
+export class TodoListItemsController {
   constructor(
-    private readonly todoListItemService: TodoListItemService,
+    private readonly todoListItemService: TodoListItemsService,
     private readonly todoListService: TodoListsService,
   ) {}
 

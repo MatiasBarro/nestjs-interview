@@ -1,10 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { TodoListItem } from 'src/interfaces/todo_list_item.interface';
-import { CreateTodoListItemDto } from './dtos/create-todo_list_item';
-import { UpdateTodoListItemDto } from './dtos/update-todo_list_item';
+import { TodoListItem } from 'src/todo_lists_items/interfaces/todo_lists_item.interface';
+import { CreateTodoListItemDto } from './dtos/create-todo_lists_item';
+import { UpdateTodoListItemDto } from './dtos/update-todo_lists_item';
 
 @Injectable()
-export class TodoListItemService {
+export class TodoListItemsService {
   constructor(private todoListItems: TodoListItem[] = []) {}
 
   create(listId: number, item: CreateTodoListItemDto) {
