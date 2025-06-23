@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list';
 import { UpdateTodoListDto } from './dtos/update-todo_list';
-import { TodoList } from '../interfaces/todo_list.interface';
+import { TodoList } from './interfaces/todo_list.interface';
 
 @Injectable()
 export class TodoListsService {
