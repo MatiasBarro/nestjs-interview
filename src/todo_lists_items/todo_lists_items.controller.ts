@@ -45,13 +45,7 @@ export class TodoListItemsController {
     @Param('todoListId') todoListId: number,
     @Param('itemId') itemId: number,
   ): TodoListItem {
-    const item = this.todoListItemService.getById(Number(todoListId), itemId);
-
-    if (!item) {
-      throw new HttpException('Item not found', 404);
-    }
-
-    return item;
+    return this.todoListItemService.getById(Number(todoListId), itemId);
   }
 
   @Patch('/:itemId')

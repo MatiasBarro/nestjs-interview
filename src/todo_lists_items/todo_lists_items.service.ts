@@ -24,9 +24,15 @@ export class TodoListItemsService {
   }
 
   getById(todoListId: number, id: number): TodoListItem {
-    return this.todoListItems.find(
+    const item = this.todoListItems.find(
       (x) => x.id === Number(id) && Number(x.todoListId) === Number(todoListId),
     );
+
+    if (!item) {
+      throw new HttpException('Item not found', 404);
+    }
+
+    return item;
   }
 
   update(todoListId: number, id: number, item: UpdateTodoListItemDto) {

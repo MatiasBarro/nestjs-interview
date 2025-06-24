@@ -54,14 +54,16 @@ describe('TodoListsItemsService', () => {
       });
     });
 
-    it('should return undefined if the item does not exist', () => {
-      const item = todoListItemsService.getById(1, 3);
-      expect(item).toBeUndefined();
+    it('should throw not found error if the item does not exist', () => {
+      expect(() => todoListItemsService.getById(1, 3)).toThrow(
+        'Item not found',
+      );
     });
 
-    it('should return null if the list does not exist', () => {
-      const item = todoListItemsService.getById(3, 1);
-      expect(item).toBeUndefined();
+    it('should throw not found error if the list does not exist', () => {
+      expect(() => todoListItemsService.getById(3, 1)).toThrow(
+        'Item not found',
+      );
     });
   });
 
