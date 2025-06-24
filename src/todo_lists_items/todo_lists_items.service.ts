@@ -25,7 +25,7 @@ export class TodoListItemsService {
 
   getById(todoListId: number, id: number): TodoListItem {
     const item = this.todoListItems.find(
-      (x) => x.id === Number(id) && Number(x.todoListId) === Number(todoListId),
+      (x) => x.id === id && x.todoListId === todoListId,
     );
 
     if (!item) {
@@ -36,13 +36,7 @@ export class TodoListItemsService {
   }
 
   update(todoListId: number, id: number, item: UpdateTodoListItemDto) {
-    const idxToUpdate = this.todoListItems.findIndex(
-      (x) => x.id === Number(id) && Number(x.todoListId) === Number(todoListId),
-    );
-
-    if (idxToUpdate === -1) {
-      throw new HttpException('Item not found', 404);
-    }
+    const idxToUpdate = this.getItemIndex(todoListId, id);
 
     const updatedItem = {
       ...this.todoListItems[idxToUpdate],
@@ -55,15 +49,21 @@ export class TodoListItemsService {
   }
 
   delete(todoListId: number, id: number) {
-    const idxToUpdate = this.todoListItems.findIndex(
-      (x) => x.id === Number(id) && Number(x.todoListId) === Number(todoListId),
+    const idxToUpdate = this.getItemIndex(todoListId, id);
+
+    this.todoListItems.splice(idxToUpdate, 1);
+  }
+
+  private getItemIndex(todoListId: number, id: number): number {
+    const idx = this.todoListItems.findIndex(
+      (x) => x.id === id && x.todoListId === todoListId,
     );
 
-    if (idxToUpdate === -1) {
+    if (idx === -1) {
       throw new HttpException('Item not found', 404);
     }
 
-    this.todoListItems.splice(idxToUpdate, 1);
+    return idx;
   }
 
   private nextId(): number {

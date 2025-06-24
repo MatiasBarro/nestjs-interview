@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ export class TodoListItemsController {
 
   @Post('')
   create(
-    @Param('todoListId') todoListId: number,
+    @Param('todoListId', ParseIntPipe) todoListId: number,
     @Body() dto: CreateTodoListItemDto,
   ): TodoListItem {
     const todoList = this.todoListService.get(todoListId);
@@ -36,22 +37,24 @@ export class TodoListItemsController {
   }
 
   @Get('')
-  getByTodoListId(@Param('todoListId') todoListId: number): TodoListItem[] {
+  getByTodoListId(
+    @Param('todoListId', ParseIntPipe) todoListId: number,
+  ): TodoListItem[] {
     return this.todoListItemService.getByTodoListId(todoListId);
   }
 
   @Get('/:itemId')
   getById(
-    @Param('todoListId') todoListId: number,
-    @Param('itemId') itemId: number,
+    @Param('todoListId', ParseIntPipe) todoListId: number,
+    @Param('itemId', ParseIntPipe) itemId: number,
   ): TodoListItem {
-    return this.todoListItemService.getById(Number(todoListId), itemId);
+    return this.todoListItemService.getById(todoListId, itemId);
   }
 
   @Patch('/:itemId')
   update(
-    @Param('todoListId') todoListId: number,
-    @Param('itemId') itemId: number,
+    @Param('todoListId', ParseIntPipe) todoListId: number,
+    @Param('itemId', ParseIntPipe) itemId: number,
     @Body() dto: UpdateTodoListItemDto,
   ) {
     return this.todoListItemService.update(todoListId, itemId, dto);
@@ -59,8 +62,8 @@ export class TodoListItemsController {
 
   @Delete('/:itemId')
   delete(
-    @Param('todoListId') todoListId: number,
-    @Param('itemId') itemId: number,
+    @Param('todoListId', ParseIntPipe) todoListId: number,
+    @Param('itemId', ParseIntPipe) itemId: number,
   ) {
     this.todoListItemService.delete(todoListId, itemId);
   }
