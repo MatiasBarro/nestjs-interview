@@ -67,4 +67,24 @@ export class TodoListItemsController {
   ) {
     this.todoListItemService.delete(todoListId, itemId);
   }
+
+  @Post('/bulk-delete')
+  deleteBulk(@Param('todoListId', ParseIntPipe) todoListId: number) {
+    const todoList = this.todoListService.get(todoListId);
+
+    if (!todoList) {
+      throw new HttpException('Todo list not found', 400);
+    }
+
+    return this.todoListItemService.bulkDelete(todoListId);
+  }
+
+  @Get('/bulk-delete/:bulkDeleteId')
+  getBulkDelete(@Param('bulkDeleteId') bulkDeleteId: string) {
+    if (!bulkDeleteId) {
+      throw new HttpException('Bulk delete id is required', 400);
+    }
+
+    return this.todoListItemService.getBulkDelete(bulkDeleteId);
+  }
 }
