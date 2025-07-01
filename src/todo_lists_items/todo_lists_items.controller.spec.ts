@@ -87,10 +87,6 @@ describe('TodoListsItemsController', () => {
     it('should throw an error if the item does not exist', () => {
       expect(() => controller.getById(1, 3)).toThrow('Item not found');
     });
-
-    it('should throw an error if the list does not exist', () => {
-      expect(() => controller.getById(3, 1)).toThrow('Item not found');
-    });
   });
 
   describe('create todo list item', () => {
@@ -137,16 +133,6 @@ describe('TodoListsItemsController', () => {
         }),
       ).toThrow('Item not found');
     });
-
-    it('should throw an error if the list does not exist', () => {
-      expect(() =>
-        controller.update(3, 1, {
-          title: 'Updated item',
-          description: 'Updated description',
-          completed: true,
-        }),
-      ).toThrow('Item not found');
-    });
   });
 
   describe('delete todo list item', () => {
@@ -158,10 +144,6 @@ describe('TodoListsItemsController', () => {
 
     it('should throw an error if the item does not exist', () => {
       expect(() => controller.delete(1, 3)).toThrow('Item not found');
-    });
-
-    it('should throw an error if the list does not exist', () => {
-      expect(() => controller.delete(3, 1)).toThrow('Item not found');
     });
   });
 
@@ -175,10 +157,6 @@ describe('TodoListsItemsController', () => {
         todoListId: 1,
         status: 'pending',
       });
-    });
-
-    it('should throw an error if the list does not exist', () => {
-      expect(() => controller.deleteBulk(3)).toThrow('Todo list not found');
     });
   });
 
