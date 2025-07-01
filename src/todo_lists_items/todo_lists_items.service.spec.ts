@@ -1,25 +1,39 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TodoListItemsService } from './todo_lists_items.service';
+import { BulkDeleteTask } from './interfaces/bulk_delete_todo_list_item.interface';
 
 describe('TodoListsItemsService', () => {
   let todoListItemsService: TodoListItemsService;
+  let bulkDeleteTasks: Map<string, BulkDeleteTask>;
+  let eventEmitter: EventEmitter2;
+  let emitterSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    todoListItemsService = new TodoListItemsService([
-      {
-        id: 1,
-        todoListId: 1,
-        title: 'Item 1',
-        description: 'Item 1 description',
-        completed: false,
-      },
-      {
-        id: 2,
-        todoListId: 2,
-        title: 'Item 2',
-        description: 'Item 2 description',
-        completed: false,
-      },
-    ]);
+    eventEmitter = new EventEmitter2();
+    emitterSpy = jest.spyOn(eventEmitter, 'emit');
+    emitterSpy.mockImplementation(() => null);
+
+    bulkDeleteTasks = new Map();
+    todoListItemsService = new TodoListItemsService(
+      [
+        {
+          id: 1,
+          todoListId: 1,
+          title: 'Item 1',
+          description: 'Item 1 description',
+          completed: false,
+        },
+        {
+          id: 2,
+          todoListId: 2,
+          title: 'Item 2',
+          description: 'Item 2 description',
+          completed: false,
+        },
+      ],
+      bulkDeleteTasks,
+      eventEmitter,
+    );
   });
 
   describe('get list items', () => {
@@ -136,6 +150,79 @@ describe('TodoListsItemsService', () => {
 
     it('should throw an error if the list does not exist', () => {
       expect(() => todoListItemsService.delete(3, 1)).toThrow('Item not found');
+    });
+  });
+
+  describe('create bulk delete task', () => {
+    it('should return a bulk delete task', () => {
+      const task = todoListItemsService.bulkDelete(1);
+      expect(task).toEqual({
+        id: expect.stringMatching(
+          /[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}/,
+        ),
+        todoListId: 1,
+        status: 'pending',
+      });
+
+      expect(bulkDeleteTasks.get(task.id)).toEqual(task);
+    });
+
+    it('should emit a bulk delete event', () => {
+      todoListItemsService.bulkDelete(1);
+      expect(emitterSpy).toHaveBeenCalledWith('bulk-delete', {
+        id: expect.stringMatching(
+          /[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}/,
+        ),
+      });
+    });
+
+    it('should fail when a bulk delete task is already pending', () => {
+      bulkDeleteTasks.set('task-id', {
+        id: 'task-id',
+        todoListId: 1,
+        status: 'pending',
+      });
+
+      expect(() => todoListItemsService.bulkDelete(1)).toThrow(
+        'Bulk delete task already in progress',
+      );
+
+      expect(emitterSpy).not.toHaveBeenCalled();
+    });
+
+    it('should fail when a bulk delete task is already in progress', () => {
+      bulkDeleteTasks.set('task-id', {
+        id: 'task-id',
+        todoListId: 1,
+        status: 'in-progress',
+      });
+
+      expect(() => todoListItemsService.bulkDelete(1)).toThrow(
+        'Bulk delete task already in progress',
+      );
+
+      expect(emitterSpy).not.toHaveBeenCalled();
+    });
+
+    it('should fail when there are no items to delete', () => {
+      expect(() => todoListItemsService.bulkDelete(3)).toThrow(
+        'No items to delete',
+      );
+
+      expect(emitterSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('get bulk delete task', () => {
+    it('should return the bulk delete task with the given id', () => {
+      const task = todoListItemsService.bulkDelete(1);
+      expect(todoListItemsService.getBulkDelete(task.id)).toEqual(task);
+    });
+
+    it('should throw an error if the bulk delete task does not exist', () => {
+      expect(() => todoListItemsService.getBulkDelete('task-id')).toThrow(
+        'Bulk delete task not found',
+      );
     });
   });
 });
