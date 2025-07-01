@@ -2,32 +2,41 @@ import { TodoListItemsController } from './todo_lists_items.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodoListsService } from '../todo_lists/todo_lists.service';
 import { TodoListItemsService } from './todo_lists_items.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('TodoListsItemsController', () => {
   let controller: TodoListItemsController;
 
   beforeEach(async () => {
+    const eventEmitter = new EventEmitter2();
+    const emitterSpy = jest.spyOn(eventEmitter, 'emit');
+    emitterSpy.mockImplementation(() => null);
+
     const todoListsService = new TodoListsService([
       { id: 1, name: 'test1' },
       { id: 2, name: 'test2' },
     ]);
 
-    const todoListItemsService = new TodoListItemsService([
-      {
-        id: 1,
-        todoListId: 1,
-        title: 'Item 1',
-        description: 'Item 1 description',
-        completed: false,
-      },
-      {
-        id: 2,
-        todoListId: 2,
-        title: 'Item 2',
-        description: 'Item 2 description',
-        completed: false,
-      },
-    ]);
+    const todoListItemsService = new TodoListItemsService(
+      [
+        {
+          id: 1,
+          todoListId: 1,
+          title: 'Item 1',
+          description: 'Item 1 description',
+          completed: false,
+        },
+        {
+          id: 2,
+          todoListId: 2,
+          title: 'Item 2',
+          description: 'Item 2 description',
+          completed: false,
+        },
+      ],
+      new Map(),
+      eventEmitter,
+    );
 
     const app: TestingModule = await Test.createTestingModule({
       controllers: [TodoListItemsController],
@@ -153,6 +162,36 @@ describe('TodoListsItemsController', () => {
 
     it('should throw an error if the list does not exist', () => {
       expect(() => controller.delete(3, 1)).toThrow('Item not found');
+    });
+  });
+
+  describe('create bulk delete task', () => {
+    it('should return a bulk delete task', () => {
+      const task = controller.deleteBulk(1);
+      expect(task).toEqual({
+        id: expect.stringMatching(
+          /[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}/,
+        ),
+        todoListId: 1,
+        status: 'pending',
+      });
+    });
+
+    it('should throw an error if the list does not exist', () => {
+      expect(() => controller.deleteBulk(3)).toThrow('Todo list not found');
+    });
+  });
+
+  describe('get bulk delete task', () => {
+    it('should return a bulk delete task', () => {
+      const task = controller.deleteBulk(1);
+      expect(controller.getBulkDelete(task.id)).toEqual({
+        id: expect.stringMatching(
+          /[a-z0-9]{8}-[a-z0-9]{4}-4[a-z0-9]{3}-[a-z0-9]{4}-[a-z0-9]{12}/,
+        ),
+        todoListId: 1,
+        status: 'pending',
+      });
     });
   });
 });
