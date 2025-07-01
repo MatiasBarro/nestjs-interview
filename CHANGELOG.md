@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0]
+
+- Add support for bulk delete todo list items
+- Add a pipe to validate the todo list id
+
 ## [1.1.0]
 
 - Move todo_lists_items logic into a separate module.
